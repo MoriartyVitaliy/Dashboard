@@ -20,7 +20,7 @@ const WEATHER_LABELS = {
   95: "Thunderstorm",
 };
 
-// Default fallback: Kyiv Oblast
+// Default fallback: Kyiv
 const FALLBACK = { lat: 50.450001, lon: 30.523333, label: "Kyiv" };
 
 export default function WeatherWidget() {

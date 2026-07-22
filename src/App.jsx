@@ -16,6 +16,8 @@ const WIDGETS = {
 
 const CANVAS_HEIGHT = 640;
 const PADDING = 12;
+const MIN_W = 18; // % ширины контейнера
+const MIN_H = 110; // px
 
 const DEFAULT_LAYOUT = {
   weather: { x: 0, y: 0, w: 40, h: 180 },
@@ -38,22 +40,24 @@ function loadLayout() {
     const saved = JSON.parse(localStorage.getItem("deck.canvas"));
     if (saved && Object.keys(WIDGETS).every((id) => saved[id])) return saved;
   } catch {
-
+    // ignore
   }
   return DEFAULT_LAYOUT;
 }
 
 export default function App() {
   const [layout, setLayout] = useState(loadLayout);
-  const [drag, setDrag] = useState(null);
+  const [interaction, setInteraction] = useState(null); // { id, mode: 'move'|'resize', rect, blocked }
   const containerRef = useRef(null);
   const dragStartRef = useRef(null);
-  const lastValidRef = useRef(null);
+  const resizeStartRef = useRef(null);
 
   function persist(next) {
     setLayout(next);
     localStorage.setItem("deck.canvas", JSON.stringify(next));
   }
+
+  // ---------- Перетаскивание ----------
 
   const startDrag = useCallback(
     (id, e) => {
@@ -65,8 +69,7 @@ export default function App() {
         containerWidth,
         startRect: rect,
       };
-      lastValidRef.current = rect;
-      setDrag({ id, rect, blocked: false });
+      setInteraction({ id, mode: "move", rect, blocked: false });
     },
     [layout]
   );
@@ -91,23 +94,61 @@ export default function App() {
         ([key, rect]) => key !== id && overlaps(candidate, rect)
       );
 
-      if (!collides) {
-        lastValidRef.current = candidate;
-        setDrag({ id, rect: candidate, blocked: false });
-      } else {
-        setDrag({ id, rect: lastValidRef.current, blocked: true });
-      }
+      setInteraction({ id, mode: "move", rect: candidate, blocked: collides });
     },
     [layout]
   );
 
-  const endDrag = useCallback(() => {
-    setDrag((current) => {
-      if (current) persist({ ...layout, [current.id]: current.rect });
+  // ---------- Изменение размера ----------
+
+  const startResize = useCallback(
+    (id, e) => {
+      const containerWidth = containerRef.current.getBoundingClientRect().width;
+      const rect = layout[id];
+      resizeStartRef.current = {
+        pointerX: e.clientX,
+        pointerY: e.clientY,
+        containerWidth,
+        startRect: rect,
+      };
+      setInteraction({ id, mode: "resize", rect, blocked: false });
+    },
+    [layout]
+  );
+
+  const moveResize = useCallback(
+    (id, e) => {
+      const start = resizeStartRef.current;
+      if (!start) return;
+      const dwPct = ((e.clientX - start.pointerX) / start.containerWidth) * 100;
+      const dhPx = e.clientY - start.pointerY;
+
+      const maxW = 100 - start.startRect.x;
+      const w = Math.min(Math.max(MIN_W, start.startRect.w + dwPct), maxW);
+      const h = Math.max(MIN_H, start.startRect.h + dhPx);
+
+      const candidate = { ...start.startRect, w, h };
+
+      const collides = Object.entries(layout).some(
+        ([key, rect]) => key !== id && overlaps(candidate, rect)
+      );
+
+      setInteraction({ id, mode: "resize", rect: candidate, blocked: collides });
+    },
+    [layout]
+  );
+
+  // ---------- Завершение (общее для move/resize) ----------
+
+  const endInteraction = useCallback(() => {
+    setInteraction((current) => {
+      if (current && !current.blocked) {
+        persist({ ...layout, [current.id]: current.rect });
+      }
       return null;
     });
     dragStartRef.current = null;
-    lastValidRef.current = null;
+    resizeStartRef.current = null;
   }, [layout]);
 
   const canvasHeight = useMemo(() => {
@@ -124,18 +165,23 @@ export default function App() {
       <main className="canvas" ref={containerRef} style={{ height: canvasHeight }}>
         {Object.keys(WIDGETS).map((id) => {
           const { component: Widget, label } = WIDGETS[id];
-          const rect = drag?.id === id ? drag.rect : layout[id];
+          const rect = interaction?.id === id ? interaction.rect : layout[id];
+          const isDragging = interaction?.id === id;
+          const isBlocked = isDragging && interaction.blocked;
           return (
             <WidgetSlot
               key={id}
               id={id}
               label={label}
               rect={rect}
-              isDragging={drag?.id === id}
-              isBlocked={drag?.id === id && drag.blocked}
+              isDragging={isDragging}
+              isBlocked={isBlocked}
               onPointerDown={(e) => startDrag(id, e)}
               onPointerMove={(e) => moveDrag(id, e)}
-              onPointerUp={endDrag}
+              onPointerUp={endInteraction}
+              onResizePointerDown={(e) => startResize(id, e)}
+              onResizePointerMove={(e) => moveResize(id, e)}
+              onResizePointerUp={endInteraction}
             >
               <Widget />
             </WidgetSlot>

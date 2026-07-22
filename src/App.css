@@ -152,15 +152,46 @@
 }
 
 .widget-slot.is-dragging.is-blocked {
-  outline: 2px dashed var(--danger);
+  outline: 2px dashed #ef4444;
   outline-offset: 6px;
   border-radius: 18px;
 }
 
 .widget-slot.is-dragging:not(.is-blocked) {
-  outline: 2px dashed var(--accent);
+  outline: 2px dashed #22c55e;
   outline-offset: 6px;
   border-radius: 18px;
+}
+
+.widget-slot__resize {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  z-index: 2;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-faint);
+  cursor: nwse-resize;
+  opacity: 0.55;
+  touch-action: none;
+  transition: opacity 0.15s ease, background 0.15s ease, color 0.15s ease;
+}
+
+.widget-slot:hover .widget-slot__resize,
+.widget-slot__resize:focus-visible {
+  opacity: 1;
+}
+
+@media (max-width: 760px) {
+  .widget-slot__resize {
+    display: none;
+  }
 }
 
 .widget-slot > .card {

@@ -8,6 +8,9 @@ export default function WidgetSlot({
   onPointerDown,
   onPointerMove,
   onPointerUp,
+  onResizePointerDown,
+  onResizePointerMove,
+  onResizePointerUp,
 }) {
   return (
     <div
@@ -55,6 +58,38 @@ export default function WidgetSlot({
           <circle cx="11" cy="13" r="1.3" fill="currentColor" />
         </svg>
       </button>
+
+      <button
+        type="button"
+        className="widget-slot__resize"
+        aria-label={`Изменить размер «${label}»`}
+        title="Изменить размер"
+        onPointerDown={(e) => {
+          e.currentTarget.setPointerCapture(e.pointerId);
+          onResizePointerDown(e);
+        }}
+        onPointerMove={(e) => {
+          if (e.currentTarget.hasPointerCapture(e.pointerId)) onResizePointerMove(e);
+        }}
+        onPointerUp={(e) => {
+          if (e.currentTarget.hasPointerCapture(e.pointerId)) {
+            e.currentTarget.releasePointerCapture(e.pointerId);
+            onResizePointerUp(e);
+          }
+        }}
+        onPointerCancel={onResizePointerUp}
+      >
+        <svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true">
+          <path
+            d="M13 3 L3 13 M13 8 L8 13 M13 13 L13 13"
+            stroke="currentColor"
+            strokeWidth="1.6"
+            strokeLinecap="round"
+            fill="none"
+          />
+        </svg>
+      </button>
+
       {children}
     </div>
   );
