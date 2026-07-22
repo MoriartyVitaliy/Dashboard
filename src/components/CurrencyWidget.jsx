@@ -1,43 +1,34 @@
-import { useEffect, useState } from "react";
-import { SunIcon } from "./icons";
-import Card from "./Card";
+import DataWidget from "./DataWidget";
 
-const TARGETS = ["EUR", "GBP", "UAH", "JPY"];
+const TARGETS = ["EUR"];
+
+async function fetchRates() {
+  const res = await fetch(`https://api.frankfurter.app/latest?from=USD&to=${TARGETS.join(",")}`);
+  if (!res.ok) throw new Error("Курсы недоступны");
+  const json = await res.json();
+  return json.rates;
+}
 
 export default function CurrencyWidget() {
-  const [state, setState] = useState({ status: "loading" });
-
-  useEffect(() => {
-    let cancelled = false;
-    fetch(`https://api.frankfurter.app/latest?from=USD&to=${TARGETS.join(",")}`)
-      .then((r) => r.json())
-      .then((data) => {
-        if (!cancelled) setState({ status: "ready", rates: data.rates, date: data.date });
-      })
-      .catch(() => {
-        if (!cancelled) setState({ status: "error" });
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
   return (
-    <Card eyebrow="Курсы валют" title="1 USD" className="card--currency">
-      {state.status === "loading" && <p className="muted">Загружаю курсы…</p>}
-      {state.status === "error" && <p className="muted">Курсы недоступны</p>}
-      {state.status === "ready" && (
+    <DataWidget
+      cacheKey="currency.usd"
+      ttl={60 * 60 * 1000}
+      fetcher={fetchRates}
+      eyebrow="Курсы валют"
+      title="1 USD"
+      className="card--currency"
+      skeletonLines={TARGETS.length}
+      renderReady={(rates) => (
         <ul className="currency-list">
           {TARGETS.map((code) => (
             <li key={code}>
               <span className="currency-list__code">{code}</span>
-              <span className="currency-list__value">
-                {state.rates[code]?.toFixed(2)}
-              </span>
+              <span className="currency-list__value">{rates[code]?.toFixed(2)}</span>
             </li>
           ))}
         </ul>
       )}
-    </Card>
+    />
   );
 }

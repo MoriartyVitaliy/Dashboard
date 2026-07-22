@@ -1,3 +1,5 @@
+import PointerHandle from "./PointerHandle";
+
 export default function WidgetSlot({
   id,
   label,
@@ -29,25 +31,13 @@ export default function WidgetSlot({
         height: `${rect.h}px`,
       }}
     >
-      <button
-        type="button"
+      <PointerHandle
         className="widget-slot__handle"
-        aria-label={`Перетащить «${label}»`}
+        label={`Перетащить «${label}»`}
         title="Перетащить"
-        onPointerDown={(e) => {
-          e.currentTarget.setPointerCapture(e.pointerId);
-          onPointerDown(e);
-        }}
-        onPointerMove={(e) => {
-          if (e.currentTarget.hasPointerCapture(e.pointerId)) onPointerMove(e);
-        }}
-        onPointerUp={(e) => {
-          if (e.currentTarget.hasPointerCapture(e.pointerId)) {
-            e.currentTarget.releasePointerCapture(e.pointerId);
-            onPointerUp(e);
-          }
-        }}
-        onPointerCancel={onPointerUp}
+        onDown={onPointerDown}
+        onMove={onPointerMove}
+        onUp={onPointerUp}
       >
         <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
           <circle cx="5" cy="3" r="1.3" fill="currentColor" />
@@ -57,27 +47,15 @@ export default function WidgetSlot({
           <circle cx="5" cy="13" r="1.3" fill="currentColor" />
           <circle cx="11" cy="13" r="1.3" fill="currentColor" />
         </svg>
-      </button>
+      </PointerHandle>
 
-      <button
-        type="button"
+      <PointerHandle
         className="widget-slot__resize"
-        aria-label={`Изменить размер «${label}»`}
+        label={`Изменить размер «${label}»`}
         title="Изменить размер"
-        onPointerDown={(e) => {
-          e.currentTarget.setPointerCapture(e.pointerId);
-          onResizePointerDown(e);
-        }}
-        onPointerMove={(e) => {
-          if (e.currentTarget.hasPointerCapture(e.pointerId)) onResizePointerMove(e);
-        }}
-        onPointerUp={(e) => {
-          if (e.currentTarget.hasPointerCapture(e.pointerId)) {
-            e.currentTarget.releasePointerCapture(e.pointerId);
-            onResizePointerUp(e);
-          }
-        }}
-        onPointerCancel={onResizePointerUp}
+        onDown={onResizePointerDown}
+        onMove={onResizePointerMove}
+        onUp={onResizePointerUp}
       >
         <svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true">
           <path
@@ -88,7 +66,7 @@ export default function WidgetSlot({
             fill="none"
           />
         </svg>
-      </button>
+      </PointerHandle>
 
       {children}
     </div>

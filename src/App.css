@@ -135,6 +135,36 @@
   transition: height 0.15s ease;
 }
 
+.widget-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.widget-skeleton__line {
+  height: 14px;
+  border-radius: 6px;
+  background: linear-gradient(90deg, var(--border) 25%, var(--border-strong) 50%, var(--border) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.4s ease-in-out infinite;
+}
+
+.widget-skeleton__line--lg { height: 34px; width: 60%; }
+.widget-skeleton__line--sm { width: 40%; }
+@keyframes skeleton-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.widget-error { color: var(--text-muted); font-size: 0.9rem; }
+.widget-error p { margin: 0 0 8px; }
+.widget-settings-btn {
+  background: none; border: none; cursor: pointer;
+  font-size: 0.95rem; opacity: 0.6; padding: 4px; border-radius: 6px;
+}
+
+.widget-settings-btn:hover { opacity: 1; background: var(--accent-soft); }
+
 .widget-slot {
   position: absolute;
   display: flex;
@@ -146,7 +176,7 @@
 
 .widget-slot.is-dragging {
   z-index: 5;
-  transition: transform 0.1s ease; /* left/top двигаются мгновенно за курсором */
+  transition: transform 0.1s ease;
   transform: scale(1.015);
   box-shadow: var(--shadow-md);
 }
@@ -249,13 +279,18 @@
 }
 
 /* ---------- Card ---------- */
-
 .card {
-  background: var(--surface);
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(16px) saturate(160%);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+  border: 1px solid rgba(61, 59, 59, 0.25);
   position: relative;
   overflow: hidden;
   border-radius: 18px;
-  transition: box-shadow 0.15s ease, transform 0.15s ease;
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.12),
+    inset 0 1px 0 rgba(27, 16, 16, 0.3);
+  transition: box-shadow 0.15s ease, transform 0.15s ease, background 0.15s ease;
 }
 
 .card::before {
@@ -266,18 +301,27 @@
   right: 0;
   height: 3px;
   background: var(--card-accent, var(--accent));
+  opacity: 0.85;
 }
 
-.card:hover {
-  transform: translateY(-2px);
+.card::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 50%;
+  background: linear-gradient(180deg, rgba(90, 90, 90, 0.15), transparent);
+  pointer-events: none;
 }
-
 
 .card__eyebrow {
+  padding: 12px 18px 0;
   color: var(--card-accent, var(--accent));
 }
 
 .card__title {
+  padding: 0 18px 12px;
   font-weight: 700;
   font-size: 1.15rem;
   margin: 0;
@@ -285,6 +329,7 @@
 }
 
 .card__body {
+  padding: 0 18px 18px;
   flex: 1;
 }
 
@@ -312,13 +357,63 @@
 }
 
 .card--github {
-  --card-accent: #a78bfa;
-  --card-accent-soft: rgba(167, 139, 250, 0.14);
-  background:
-    linear-gradient(rgba(167, 139, 250, 0.08) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(167, 139, 250, 0.08) 1px, transparent 1px),
-    var(--surface);
-  background-size: 18px 18px, 18px 18px;
+  background: rgba(19, 21, 26, 0.83);
+  backdrop-filter: blur(16px) saturate(160%);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.card--github .card__eyebrow,
+.card--github .card__title {
+  color: #c9d1d9;
+}
+
+.card--github .card__title {
+  font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  font-size: 1rem;
+}
+
+.activity-list--gh li {
+  align-items: center;
+  border-bottom: 1px solid #21262d;
+  padding: 8px 0;
+}
+
+.activity-list--gh li:last-child {
+  border-bottom: none;
+}
+
+.activity-list__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--gh-color) 18%, transparent);
+  flex-shrink: 0;
+}
+
+.activity-list--gh .activity-list__label {
+  color: #8b949e;
+  font-size: 0.85rem;
+}
+
+.activity-list--gh .activity-list__repo {
+  font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  color: #58a6ff;
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-decoration: none;
+}
+
+.activity-list--gh .activity-list__repo:hover {
+  text-decoration: underline;
+}
+
+.activity-list--gh .activity-list__time {
+  color: #6e7681;
+  font-size: 0.75rem;
 }
 
 .card--todo {
@@ -334,6 +429,91 @@
     var(--surface);
 }
 
+.card--github {
+  border: 1px solid #30363d;
+}
+
+.card--github .card__body {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.gh-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.gh-title__avatar {
+  border-radius: 50%;
+  border: 1px solid #30363d;
+}
+
+/* фильтры-чипы в стиле GitHub label pills */
+.gh-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.gh-filters__btn {
+  background: #161b22;
+  border: 1px solid #30363d;
+  color: #8b949e;
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
+}
+
+.gh-filters__btn:hover {
+  border-color: #58a6ff;
+  color: #c9d1d9;
+}
+
+.gh-filters__btn.is-active {
+  background: color-mix(in srgb, #58a6ff 18%, #161b22);
+  border-color: #58a6ff;
+  color: #58a6ff;
+}
+
+.gh-filters__empty {
+  padding: 12px 0;
+}
+
+/* скроллируемый список активности с тонким тёмным скроллбаром */
+.activity-list--gh {
+  max-height: 220px;
+  overflow-y: auto;
+  padding-right: 6px;
+  scrollbar-width: thin;
+  scrollbar-color: #30363d transparent;
+}
+
+.activity-list--gh::-webkit-scrollbar {
+  width: 6px;
+}
+
+.activity-list--gh::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.activity-list--gh::-webkit-scrollbar-thumb {
+  background: #30363d;
+  border-radius: 999px;
+}
+
+.activity-list--gh::-webkit-scrollbar-thumb:hover {
+  background: #484f58;
+}
+
+.activity-list--gh li {
+  align-items: center;
+}
 /* ---------- Weather ---------- */
 
 .weather {
