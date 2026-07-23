@@ -4,18 +4,18 @@
   padding: 48px 28px 64px;
   font-family: var(--font);
 }
-
+ 
 .muted {
   color: var(--text-muted);
   font-size: 0.85rem;
 }
-
+ 
 /* ---------- Header ---------- */
-
+ 
 .header {
   margin-bottom: 36px;
 }
-
+ 
 .header__row {
   display: flex;
   justify-content: space-between;
@@ -23,7 +23,7 @@
   gap: 24px;
   margin-bottom: 24px;
 }
-
+ 
 .header__eyebrow {
   font-size: 0.75rem;
   font-weight: 700;
@@ -32,7 +32,7 @@
   color: var(--accent);
   margin: 0 0 8px;
 }
-
+ 
 .header__greeting {
   font-weight: 700;
   font-size: clamp(1.9rem, 4vw, 2.6rem);
@@ -41,14 +41,14 @@
   color: var(--text);
   letter-spacing: -0.01em;
 }
-
+ 
 .header__date {
   color: var(--text-muted);
   text-transform: capitalize;
   margin: 8px 0 0;
   font-size: 0.95rem;
 }
-
+ 
 .header__clock {
   font-size: clamp(1.3rem, 2.6vw, 1.7rem);
   font-weight: 700;
@@ -59,14 +59,14 @@
   background: var(--accent-soft);
   white-space: nowrap;
 }
-
+ 
 /* ---------- Horizon strip (signature element) ---------- */
-
+ 
 .horizon {
   position: relative;
   height: 34px;
 }
-
+ 
 .horizon__band {
   position: absolute;
   inset: 0;
@@ -75,14 +75,14 @@
   border-radius: 999px;
   box-shadow: var(--shadow-sm);
 }
-
+ 
 .horizon__ticks {
   position: absolute;
   inset: 0;
   top: 22px;
   height: 14px;
 }
-
+ 
 .horizon__tick {
   position: absolute;
   top: 0;
@@ -90,12 +90,12 @@
   height: 4px;
   background: var(--border-strong);
 }
-
+ 
 .horizon__tick[data-major="true"] {
   height: 4px;
   background: var(--text-faint);
 }
-
+ 
 .horizon__tick em {
   position: absolute;
   top: 8px;
@@ -106,7 +106,7 @@
   font-weight: 600;
   color: var(--text-faint);
 }
-
+ 
 .horizon__marker {
   position: absolute;
   top: 3px;
@@ -115,7 +115,7 @@
   transform: translateX(-50%);
   transition: left 20s linear;
 }
-
+ 
 .horizon__dot {
   position: absolute;
   top: 0;
@@ -127,20 +127,20 @@
   border: 3px solid var(--accent);
   box-shadow: var(--shadow-md);
 }
-
+ 
 /* ---------- Grid & drag-and-drop ---------- */
 .canvas {
   position: relative;
   width: 100%;
   transition: height 0.15s ease;
 }
-
+ 
 .widget-skeleton {
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
-
+ 
 .widget-skeleton__line {
   height: 14px;
   border-radius: 6px;
@@ -148,23 +148,23 @@
   background-size: 200% 100%;
   animation: skeleton-shimmer 1.4s ease-in-out infinite;
 }
-
+ 
 .widget-skeleton__line--lg { height: 34px; width: 60%; }
 .widget-skeleton__line--sm { width: 40%; }
 @keyframes skeleton-shimmer {
   0% { background-position: 200% 0; }
   100% { background-position: -200% 0; }
 }
-
+ 
 .widget-error { color: var(--text-muted); font-size: 0.9rem; }
 .widget-error p { margin: 0 0 8px; }
 .widget-settings-btn {
   background: none; border: none; cursor: pointer;
   font-size: 0.95rem; opacity: 0.6; padding: 4px; border-radius: 6px;
 }
-
+ 
 .widget-settings-btn:hover { opacity: 1; background: var(--accent-soft); }
-
+ 
 .widget-slot {
   position: absolute;
   display: flex;
@@ -173,26 +173,26 @@
   transition: left 0.06s linear, top 0.06s linear, transform 0.15s ease, box-shadow 0.15s ease;
   height: 100px;
 }
-
+ 
 .widget-slot.is-dragging {
   z-index: 5;
   transition: transform 0.1s ease;
   transform: scale(1.015);
   box-shadow: var(--shadow-md);
 }
-
+ 
 .widget-slot.is-dragging.is-blocked {
   outline: 2px dashed #ef4444;
   outline-offset: 6px;
   border-radius: 18px;
 }
-
+ 
 .widget-slot.is-dragging:not(.is-blocked) {
   outline: 2px dashed #22c55e;
   outline-offset: 6px;
   border-radius: 18px;
 }
-
+ 
 .widget-slot__resize {
   position: absolute;
   bottom: 10px;
@@ -212,24 +212,24 @@
   touch-action: none;
   transition: opacity 0.15s ease, background 0.15s ease, color 0.15s ease;
 }
-
+ 
 .widget-slot:hover .widget-slot__resize,
 .widget-slot__resize:focus-visible {
   opacity: 1;
 }
-
+ 
 @media (max-width: 760px) {
   .widget-slot__resize {
     display: none;
   }
 }
-
+ 
 .widget-slot > .card {
   flex: 1;
   width: 100%;
   height: 100%;
 }
-
+ 
 .widget-slot__handle {
   position: absolute;
   top: 14px;
@@ -249,16 +249,16 @@
   touch-action: none;
   transition: opacity 0.15s ease, background 0.15s ease, color 0.15s ease;
 }
-
+ 
 .widget-slot:hover .widget-slot__handle,
 .widget-slot__handle:focus-visible {
   opacity: 1;
 }
-
+ 
 .widget-slot__handle:active {
   cursor: grabbing;
 }
-
+ 
 @media (max-width: 760px) {
   .canvas {
     height: auto !important;
@@ -277,22 +277,17 @@
     align-items: flex-start;
   }
 }
-
+ 
 /* ---------- Card ---------- */
+ 
 .card {
-  background: rgba(255, 255, 255, 0.12);
-  backdrop-filter: blur(16px) saturate(160%);
-  -webkit-backdrop-filter: blur(16px) saturate(160%);
-  border: 1px solid rgba(61, 59, 59, 0.25);
+  background: var(--surface);
   position: relative;
   overflow: hidden;
   border-radius: 18px;
-  box-shadow:
-    0 8px 32px rgba(0, 0, 0, 0.12),
-    inset 0 1px 0 rgba(27, 16, 16, 0.3);
-  transition: box-shadow 0.15s ease, transform 0.15s ease, background 0.15s ease;
+  transition: box-shadow 0.15s ease, transform 0.15s ease;
 }
-
+ 
 .card::before {
   content: "";
   position: absolute;
@@ -301,25 +296,17 @@
   right: 0;
   height: 3px;
   background: var(--card-accent, var(--accent));
-  opacity: 0.85;
 }
-
-.card::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 50%;
-  background: linear-gradient(180deg, rgba(90, 90, 90, 0.15), transparent);
-  pointer-events: none;
+ 
+.card:hover {
+  transform: translateY(-2px);
 }
-
+ 
 .card__eyebrow {
   padding: 12px 18px 0;
   color: var(--card-accent, var(--accent));
 }
-
+ 
 .card__title {
   padding: 0 18px 12px;
   font-weight: 700;
@@ -327,12 +314,12 @@
   margin: 0;
   color: var(--text);
 }
-
+ 
 .card__body {
   padding: 0 18px 18px;
   flex: 1;
 }
-
+ 
 .card--weather {
   --card-accent: #38bdf8;
   --card-accent-soft: rgba(56, 189, 248, 0.14);
@@ -341,7 +328,7 @@
     linear-gradient(165deg, rgba(56, 189, 248, 0.07), transparent 60%),
     var(--surface);
 }
-
+ 
 .card--currency {
   --card-accent: #34d399;
   --card-accent-soft: rgba(52, 211, 153, 0.14);
@@ -355,34 +342,40 @@
     ),
     var(--surface);
 }
-
+ 
 .card--github {
-  background: rgba(19, 21, 26, 0.83);
-  backdrop-filter: blur(16px) saturate(160%);
-  -webkit-backdrop-filter: blur(16px) saturate(160%);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  --card-accent: #2c8144;
+  background: rgba(8, 9, 20, 0.59);
+  color: #c9d1d9;
+  border: 1px solid #30363d;
 }
-
+ 
 .card--github .card__eyebrow,
 .card--github .card__title {
   color: #c9d1d9;
 }
-
+ 
 .card--github .card__title {
   font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   font-size: 1rem;
 }
-
+ 
+.card--github .card__body {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+ 
 .activity-list--gh li {
   align-items: center;
   border-bottom: 1px solid #21262d;
   padding: 8px 0;
 }
-
+ 
 .activity-list--gh li:last-child {
   border-bottom: none;
 }
-
+ 
 .activity-list__icon {
   display: inline-flex;
   align-items: center;
@@ -393,12 +386,12 @@
   background: color-mix(in srgb, var(--gh-color) 18%, transparent);
   flex-shrink: 0;
 }
-
+ 
 .activity-list--gh .activity-list__label {
   color: #8b949e;
   font-size: 0.85rem;
 }
-
+ 
 .activity-list--gh .activity-list__repo {
   font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   color: #58a6ff;
@@ -406,16 +399,16 @@
   font-size: 0.85rem;
   text-decoration: none;
 }
-
+ 
 .activity-list--gh .activity-list__repo:hover {
   text-decoration: underline;
 }
-
+ 
 .activity-list--gh .activity-list__time {
   color: #6e7681;
   font-size: 0.75rem;
 }
-
+ 
 .card--todo {
   --card-accent: #fb923c;
   --card-accent-soft: rgba(251, 146, 60, 0.14);
@@ -428,28 +421,18 @@
     ),
     var(--surface);
 }
-
-.card--github {
-  border: 1px solid #30363d;
-}
-
-.card--github .card__body {
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
-}
-
+ 
 .gh-title {
   display: inline-flex;
   align-items: center;
   gap: 8px;
 }
-
+ 
 .gh-title__avatar {
   border-radius: 50%;
   border: 1px solid #30363d;
 }
-
+ 
 /* фильтры-чипы в стиле GitHub label pills */
 .gh-filters {
   display: flex;
@@ -457,7 +440,7 @@
   gap: 6px;
   margin-bottom: 10px;
 }
-
+ 
 .gh-filters__btn {
   background: #161b22;
   border: 1px solid #30363d;
@@ -469,22 +452,22 @@
   cursor: pointer;
   transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
 }
-
+ 
 .gh-filters__btn:hover {
   border-color: #58a6ff;
   color: #c9d1d9;
 }
-
+ 
 .gh-filters__btn.is-active {
   background: color-mix(in srgb, #58a6ff 18%, #161b22);
   border-color: #58a6ff;
   color: #58a6ff;
 }
-
+ 
 .gh-filters__empty {
   padding: 12px 0;
 }
-
+ 
 /* скроллируемый список активности с тонким тёмным скроллбаром */
 .activity-list--gh {
   max-height: 220px;
@@ -493,49 +476,46 @@
   scrollbar-width: thin;
   scrollbar-color: #30363d transparent;
 }
-
+ 
 .activity-list--gh::-webkit-scrollbar {
   width: 6px;
 }
-
+ 
 .activity-list--gh::-webkit-scrollbar-track {
   background: transparent;
 }
-
+ 
 .activity-list--gh::-webkit-scrollbar-thumb {
   background: #30363d;
   border-radius: 999px;
 }
-
+ 
 .activity-list--gh::-webkit-scrollbar-thumb:hover {
   background: #484f58;
 }
-
-.activity-list--gh li {
-  align-items: center;
-}
+ 
 /* ---------- Weather ---------- */
-
+ 
 .weather {
   display: flex;
   align-items: center;
   gap: 18px;
 }
-
+ 
 .weather__temp {
   font-size: 2.75rem;
   font-weight: 700;
   color: var(--text);
   line-height: 1;
 }
-
+ 
 .weather__meta p {
   margin: 0 0 6px;
   font-size: 0.95rem;
 }
-
+ 
 /* ---------- Currency ---------- */
-
+ 
 .currency-list {
   list-style: none;
   margin: 0;
@@ -544,7 +524,7 @@
   flex-direction: column;
   gap: 10px;
 }
-
+ 
 .currency-list li {
   display: flex;
   justify-content: space-between;
@@ -552,27 +532,27 @@
   border-bottom: 1px solid var(--border);
   padding-bottom: 10px;
 }
-
+ 
 .currency-list li:last-child {
   border-bottom: none;
   padding-bottom: 0;
 }
-
+ 
 .currency-list__code {
   color: var(--text-muted);
   font-weight: 600;
   letter-spacing: 0.03em;
 }
-
+ 
 .currency-list__value {
   font-size: 1.05rem;
   font-weight: 700;
   color: var(--text);
   font-variant-numeric: tabular-nums;
 }
-
+ 
 /* ---------- GitHub activity ---------- */
-
+ 
 .activity-list {
   list-style: none;
   margin: 0;
@@ -581,7 +561,7 @@
   flex-direction: column;
   gap: 12px;
 }
-
+ 
 .activity-list li {
   font-size: 0.9rem;
   display: flex;
@@ -589,25 +569,25 @@
   gap: 6px;
   align-items: baseline;
 }
-
+ 
 .activity-list__label {
   color: var(--text-muted);
 }
-
+ 
 .activity-list__repo {
   color: var(--accent);
   font-weight: 600;
   font-size: 0.9rem;
 }
-
+ 
 .activity-list__time {
   color: var(--text-faint);
   font-size: 0.78rem;
   margin-left: auto;
 }
-
+ 
 /* ---------- Todo ---------- */
-
+ 
 .todo-list {
   list-style: none;
   margin: 14px 0 0;
@@ -616,32 +596,32 @@
   flex-direction: column;
   gap: 10px;
 }
-
+ 
 .todo-list li {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 8px;
 }
-
+ 
 .todo-list label {
   display: flex;
   align-items: center;
   gap: 10px;
   font-size: 0.95rem;
 }
-
+ 
 .todo-list input[type="checkbox"] {
   accent-color: var(--accent);
   width: 17px;
   height: 17px;
 }
-
+ 
 .todo-list li.is-done span {
   text-decoration: line-through;
   color: var(--text-faint);
 }
-
+ 
 .todo-list__remove {
   background: none;
   border: none;
@@ -652,19 +632,19 @@
   padding: 2px 6px;
   border-radius: 6px;
 }
-
+ 
 .todo-list__remove:hover {
   color: var(--danger);
   background: #fef2f2;
 }
-
+ 
 /* ---------- Shared form / button bits ---------- */
-
+ 
 .inline-form {
   display: flex;
   gap: 8px;
 }
-
+ 
 .inline-form__input {
   flex: 1;
   background: var(--surface);
@@ -675,13 +655,13 @@
   font-family: var(--font);
   font-size: 0.92rem;
 }
-
+ 
 .inline-form__input:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 1px;
   border-color: var(--accent);
 }
-
+ 
 .inline-form__btn {
   background: var(--accent);
   border: none;
@@ -691,17 +671,17 @@
   font-weight: 700;
   cursor: pointer;
 }
-
+ 
 .inline-form__btn:hover {
   background: var(--accent-hover);
 }
-
+ 
 .inline-form__btn:focus-visible,
 .text-btn:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
-
+ 
 .text-btn {
   background: none;
   border: none;
@@ -713,13 +693,13 @@
   padding: 0;
   text-decoration: underline;
 }
-
+ 
 .text-btn:hover {
   color: var(--accent);
 }
-
+ 
 /* ---------- Footer ---------- */
-
+ 
 .footer {
   margin-top: 36px;
   display: flex;
