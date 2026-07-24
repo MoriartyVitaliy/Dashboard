@@ -342,6 +342,188 @@
     ),
     var(--surface);
 }
+
+
+.card--currency {
+  --card-accent: #34d399;
+  --card-accent-soft: rgba(52, 211, 153, 0.14);
+  background:
+    radial-gradient(circle at 92% -10%, rgba(52, 211, 153, 0.2), transparent 55%),
+    repeating-linear-gradient(
+      -45deg,
+      rgba(52, 211, 153, 0.045) 0,
+      rgba(52, 211, 153, 0.045) 1px,
+      transparent 1px,
+      transparent 12px
+    ),
+    var(--surface);
+}
+ 
+.currency-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+ 
+.currency-list li {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 10px;
+  border-radius: 12px;
+  transition: background 0.15s ease;
+}
+ 
+.currency-list li:hover {
+  background: var(--card-accent-soft, var(--accent-soft));
+}
+ 
+.currency-list__code {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text);
+  font-weight: 700;
+  font-size: 0.92rem;
+  letter-spacing: 0.02em;
+}
+ 
+.currency-list__code::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--card-accent, var(--accent));
+  opacity: 0.5;
+  flex-shrink: 0;
+}
+ 
+.currency-list li:has(.currency-list__badge) .currency-list__code::before {
+  background: linear-gradient(135deg, #f59e0b, #ea580c);
+  opacity: 1;
+}
+ 
+.currency-list__badge {
+  font-size: 0.6rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #fff;
+  background: linear-gradient(135deg, #f59e0b, #ea580c);
+  border-radius: 999px;
+  padding: 2px 7px;
+  line-height: 1.5;
+  box-shadow: 0 1px 4px rgba(234, 88, 12, 0.35);
+}
+ 
+.currency-list__value {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+  margin-left: auto;
+  transition: transform 0.15s ease;
+}
+ 
+.currency-list li:hover .currency-list__value {
+  transform: translateX(-6px);
+}
+ 
+.currency-list__remove {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%) scale(0.85);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border: none;
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--text-faint);
+  cursor: pointer;
+  font-size: 0.95rem;
+  line-height: 1;
+  opacity: 0;
+  transition: opacity 0.15s ease, transform 0.15s ease, color 0.15s ease, background 0.15s ease;
+}
+ 
+.currency-list li:hover .currency-list__remove,
+.currency-list__remove:focus-visible {
+  opacity: 1;
+  transform: translateY(-50%) scale(1);
+}
+ 
+.currency-list__remove:hover {
+  color: #fff;
+  background: var(--danger, #ef4444);
+}
+ 
+/* --- добавление валюты --- */
+ 
+.currency-add {
+  margin-top: 12px;
+}
+ 
+.currency-add__toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  background: none;
+  border: 1px dashed var(--border-strong);
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 9px 12px;
+  border-radius: 10px;
+  transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
+}
+ 
+.currency-add__toggle::before {
+  content: "+";
+  font-size: 1rem;
+  font-weight: 800;
+  line-height: 1;
+}
+ 
+.currency-add__toggle:hover {
+  border-color: var(--card-accent, var(--accent));
+  color: var(--card-accent, var(--accent));
+  background: var(--card-accent-soft, var(--accent-soft));
+}
+ 
+.currency-add .inline-form {
+  margin-top: 0;
+}
+ 
+.currency-add select.inline-form__input {
+  appearance: none;
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--text-faint) 50%),
+    linear-gradient(135deg, var(--text-faint) 50%, transparent 50%);
+  background-position: calc(100% - 18px) 55%, calc(100% - 13px) 55%;
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+  padding-right: 30px;
+}
+ 
+.currency-add .inline-form__btn {
+  background: var(--card-accent, var(--accent));
+}
+ 
+.currency-add .inline-form__btn:hover {
+  background: color-mix(in srgb, var(--card-accent, var(--accent)) 85%, #000);
+}
  
 .card--github {
   --card-accent: #2c8144;
@@ -695,7 +877,7 @@
 }
  
 .text-btn:hover {
-  color: var(--accent);
+  color: var(--accent); 
 }
  
 /* ---------- Footer ---------- */
