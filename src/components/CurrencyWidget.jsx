@@ -3,6 +3,11 @@ import DataWidget from "./DataWidget";
 
 const BASE = "USD";
 const STORAGE_KEY = "dashboard.currency.targets";
+const REFRESH_INTERVAL = 60 * 60 * 1000; // 1 час
+const CACHE_TTL = 60 * 60 * 1000; // 1 час — держим кэш "свежим" ровно до следующего автообновления
+const CACHE_KEY = `currency.${BASE}`; // стабильный ключ: не зависит от набора валют,
+// иначе при каждом добавлении/удалении валюты в localStorage плодились бы
+// новые записи кэша, а старые никогда не удалялись.
 
 // --- доступные валюты ---
 
@@ -34,14 +39,14 @@ const DEFAULT_TARGETS = [
 // --- персистентность выбора пользователя ---
 
 let memoryTargets = null;
- 
+
 function loadTargets() {
   if (memoryTargets && Array.isArray(memoryTargets) && memoryTargets.length > 0) {
     return memoryTargets;
   }
   return DEFAULT_TARGETS;
 }
- 
+
 function saveTargets(targets) {
   memoryTargets = targets;
 }
@@ -51,7 +56,6 @@ function saveTargets(targets) {
 const numberFormatters = new Map();
 function formatRate(value, code, type) {
   if (typeof value !== "number" || Number.isNaN(value)) return "—";
- 
 
   const bucket =
     type === "crypto"
@@ -64,7 +68,7 @@ function formatRate(value, code, type) {
       ? "hi"
       : "lo";
   const key = `${code}:${type}:${bucket}`;
- 
+
   if (!numberFormatters.has(key)) {
     if (type === "crypto") {
       numberFormatters.set(
@@ -156,6 +160,10 @@ async function fetchRates(targets) {
 
     if (fiat?.__error && crypto?.__error) throw fiat.__error;
 
+    // Важно: merged содержит только курсы для ТЕКУЩЕГО набора targets.
+    // Благодаря стабильному CACHE_KEY эта запись перезаписывает предыдущую
+    // в localStorage, поэтому валюты, которые убрали из списка,
+    // не остаются висеть в кэше.
     const merged = {};
     if (!fiat?.__error) Object.assign(merged, fiat);
     if (!crypto?.__error) Object.assign(merged, crypto);
@@ -169,49 +177,18 @@ async function fetchRates(targets) {
   }
 }
 
-  function moveTarget(from, to) {
-    if (from === to || from < 0 || to < 0 || from >= targets.length || to >= targets.length) return;
-    setTargets((prev) => {
-      const next = [...prev];
-      const [moved] = next.splice(from, 1);
-      next.splice(to, 0, moved);
-      return next;
-    });
-  }
- 
-  function handleDragStart(index) {
-    setDragIndex(index);
-  }
- 
-  function handleDragOver(e, index) {
-    e.preventDefault();
-    e.dataTransfer.dropEffect = "move";
-    if (index !== dragOverIndex) setDragOverIndex(index);
-  }
- 
-  function handleDrop(index) {
-    if (dragIndex !== null) moveTarget(dragIndex, index);
-    setDragIndex(null);
-    setDragOverIndex(null);
-  }
- 
-  function handleDragEnd() {
-    setDragIndex(null);
-    setDragOverIndex(null);
-  }
-
 export default function CurrencyWidget() {
   const [targets, setTargets] = useState(loadTargets);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [pendingCode, setPendingCode] = useState("");
-  const [refreshNonce, setRefreshNonce] = useState(0);
-  const [isFetching, setIsFetching] = useState(false);
   const [dragIndex, setDragIndex] = useState(null);
   const [dragOverIndex, setDragOverIndex] = useState(null);
 
   const itemRefs = useRef(new Map());
   const prevRectsRef = useRef(new Map());
-  
+  const reloadRef = useRef(() => {});
+  const targetsCodesKey = targets.map((t) => t.code).join(",");
+
   function captureRects() {
     const map = new Map();
     itemRefs.current.forEach((el, code) => {
@@ -277,6 +254,26 @@ export default function CurrencyWidget() {
     saveTargets(targets);
   }, [targets]);
 
+  // Т.к. CACHE_KEY теперь стабильный (не меняется при добавлении/удалении
+  // валюты), нужно вручную инициировать перезагрузку курсов при изменении
+  // состава targets — иначе новая валюта не подтянула бы курс сама.
+  const isFirstRun = useRef(true);
+  useEffect(() => {
+    if (isFirstRun.current) {
+      isFirstRun.current = false;
+      return;
+    }
+    reloadRef.current();
+  }, [targetsCodesKey]);
+
+  // Автообновление курсов раз в час.
+  useEffect(() => {
+    const id = setInterval(() => {
+      reloadRef.current();
+    }, REFRESH_INTERVAL);
+    return () => clearInterval(id);
+  }, []);
+
   const availableOptions = useMemo(() => {
     const used = new Set(targets.map((t) => t.code));
     const fiat = FIAT_OPTIONS.filter((c) => !used.has(c)).map((code) => ({ code, type: "fiat" }));
@@ -296,90 +293,90 @@ export default function CurrencyWidget() {
     setTargets((prev) => prev.filter((t) => t.code !== code));
   }
 
-  const cacheKey = `currency.${BASE}.${targets.map((t) => t.code).sort().join("-")}`;
-
   return (
     <DataWidget
-      cacheKey={cacheKey}
-      ttl={6 * 60 * 60 * 1000}
+      cacheKey={CACHE_KEY}
+      ttl={CACHE_TTL}
       fetcher={() => fetchRates(targets)}
       eyebrow="Курсы валют"
       title={`1 ${BASE}`}
       className="card--currency"
       skeletonLines={targets.length || 3}
-      renderReady={(rates) => (
-        <>
-          <ul className="currency-list">
-            {targets.map(({ code, type }, index) => (
-              <li key={code}>
-                <span
-                  ref={(el) => {
-                    if (el) itemRefs.current.set(code, el);
-                    else itemRefs.current.delete(code);
-                  }}
-                  className={`currency-list__item${dragIndex === index ? " is-dragging" : ""}${
-                    dragOverIndex === index && dragIndex !== null && dragIndex !== index ? " is-drop-target" : ""
-                  }`}
-                  draggable
-                  onDragStart={() => handleDragStart(index)}
-                  onDragEnter={() => handleDragEnter(index)}
-                  onDragOver={(e) => handleDragOver(e, index)}
-                  onDrop={() => handleDrop(index)}
-                  onDragEnd={handleDragEnd}
-                >
-                  <span className="currency-list__handle" aria-hidden="true" title="Перетащите, чтобы изменить порядок">
-                    ⠿
+      renderReady={(rates, { reload }) => {
+        reloadRef.current = reload;
+        return (
+          <>
+            <ul className="currency-list">
+              {targets.map(({ code, type }, index) => (
+                <li key={code}>
+                  <span
+                    ref={(el) => {
+                      if (el) itemRefs.current.set(code, el);
+                      else itemRefs.current.delete(code);
+                    }}
+                    className={`currency-list__item${dragIndex === index ? " is-dragging" : ""}${
+                      dragOverIndex === index && dragIndex !== null && dragIndex !== index ? " is-drop-target" : ""
+                    }`}
+                    draggable
+                    onDragStart={() => handleDragStart(index)}
+                    onDragOver={(e) => handleDragOver(e, index)}
+                    onDrop={() => handleDrop(index)}
+                    onDragEnd={handleDragEnd}
+                  >
+                    <span className="currency-list__handle" aria-hidden="true" title="Перетащите, чтобы изменить порядок">
+                      ⠿
+                    </span>
+                    {code}
+                    {type === "crypto" && <span className="currency-list__badge">крипто</span>}
                   </span>
-                  {code}
-                  {type === "crypto" && <span className="currency-list__badge">крипто</span>}
-                </span>
-                <span className="currency-list__value">{formatRate(rates[code], code, type)}</span>
+                  <span className="currency-list__value">{formatRate(rates[code], code, type)}</span>
+                  <button
+                    type="button"
+                    className="currency-list__remove"
+                    onClick={() => removeTarget(code)}
+                    aria-label={`Убрать ${code}`}
+                    title={`Убрать ${code}`}
+                  >
+                    ×
+                  </button>
+                </li>
+              ))}
+            </ul>
+
+            {pickerOpen ? (
+              <div className="inline-form">
+                <select
+                  className="inline-form__input"
+                  value={pendingCode}
+                  onChange={(e) => setPendingCode(e.target.value)}
+                >
+                  <option value="" disabled>
+                    Выберите валюту
+                  </option>
+                  {availableOptions.length === 0 && <option disabled>Все уже добавлены</option>}
+                  {availableOptions.map((o) => (
+                    <option key={o.code} value={o.code}>
+                      {o.code} {o.type === "crypto" ? "(крипто)" : ""}
+                    </option>
+                  ))}
+                </select>
                 <button
                   type="button"
-                  className="currency-list__remove"
-                  onClick={() => removeTarget(code)}
-                  aria-label={`Убрать ${code}`}
-                  title={`Убрать ${code}`}
+                  className="inline-form__btn"
+                  disabled={!pendingCode}
+                  onClick={() => addTarget(pendingCode)}
                 >
-                  ×
+                  Добавить
                 </button>
-              </li>
-            ))}
-          </ul>
-
-          {pickerOpen ? (
-            <div className="inline-form">
-              <select
-                className="inline-form__input"
-                value={pendingCode}
-                onChange={(e) => setPendingCode(e.target.value)}
-              >
-                <option value="" disabled>
-                  Выберите валюту
-                </option>
-                {availableOptions.length === 0 && <option disabled>Все уже добавлены</option>}
-                {availableOptions.map((o) => (
-                  <option key={o.code} value={o.code}>
-                    {o.code} {o.type === "crypto" ? "(крипто)" : ""}
-                  </option>
-                ))}
-              </select>
-              <button
-                type="button"
-                className="inline-form__btn"
-                disabled={!pendingCode}
-                onClick={() => addTarget(pendingCode)}
-              >
-                Добавить
+              </div>
+            ) : (
+              <button type="button" className="text-btn" onClick={() => setPickerOpen(true)}>
+                + добавить валюту
               </button>
-            </div>
-          ) : (
-            <button type="button" className="text-btn" onClick={() => setPickerOpen(true)}>
-              + добавить валюту
-            </button>
-          )}
-        </>
-      )}
+            )}
+          </>
+        );
+      }}
     />
   );
 }
