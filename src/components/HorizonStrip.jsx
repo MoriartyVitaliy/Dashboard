@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 
-// Color of the sky at a given hour (0-24), used to build the gradient stops.
 function skyColorAt(hour) {
   const stops = [
     { h: 0, c: [55, 48, 163] }, // deep indigo night

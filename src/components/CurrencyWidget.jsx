@@ -3,11 +3,9 @@ import DataWidget from "./DataWidget";
 
 const BASE = "USD";
 const STORAGE_KEY = "dashboard.currency.targets";
-const REFRESH_INTERVAL = 60 * 60 * 1000; // 1 час
-const CACHE_TTL = 60 * 60 * 1000; // 1 час — держим кэш "свежим" ровно до следующего автообновления
-const CACHE_KEY = `currency.${BASE}`; // стабильный ключ: не зависит от набора валют,
-// иначе при каждом добавлении/удалении валюты в localStorage плодились бы
-// новые записи кэша, а старые никогда не удалялись.
+const REFRESH_INTERVAL = 60 * 60 * 1000; 
+const CACHE_TTL = 60 * 60 * 1000; 
+const CACHE_KEY = `currency.${BASE}`;
 
 // --- доступные валюты ---
 
@@ -36,7 +34,6 @@ const DEFAULT_TARGETS = [
   { code: "BTC", type: "crypto" },
 ];
 
-// --- персистентность выбора пользователя ---
 
 let memoryTargets = null;
 
@@ -160,10 +157,6 @@ async function fetchRates(targets) {
 
     if (fiat?.__error && crypto?.__error) throw fiat.__error;
 
-    // Важно: merged содержит только курсы для ТЕКУЩЕГО набора targets.
-    // Благодаря стабильному CACHE_KEY эта запись перезаписывает предыдущую
-    // в localStorage, поэтому валюты, которые убрали из списка,
-    // не остаются висеть в кэше.
     const merged = {};
     if (!fiat?.__error) Object.assign(merged, fiat);
     if (!crypto?.__error) Object.assign(merged, crypto);

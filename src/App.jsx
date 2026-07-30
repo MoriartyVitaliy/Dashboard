@@ -16,7 +16,7 @@ const WIDGETS = {
 
 const CANVAS_HEIGHT = 640;
 const PADDING = 12;
-const MIN_W = 18; // % ширины контейнера
+const MIN_W = 18; // %
 const MIN_H = 110; // px
 
 const DEFAULT_LAYOUT = {
